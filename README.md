@@ -4,6 +4,20 @@ SmokeLog is a mobile-first **mindful nicotine reduction** application built usin
 
 ---
 
+## 📸 Visuals & Screenshots
+
+Here is a preview of the SmokeLog interface across different application tabs:
+
+| Gap Tracker | Control Dashboard | Logs History |
+| :---: | :---: | :---: |
+| ![Gap Tracker](./assets/temp/Screenshot_1783360048.png) | ![Control Dashboard](./assets/temp/Screenshot_1783360052.png) | ![Logs History](./assets/temp/Screenshot_1783360056.png) |
+
+| Health & Savings | Setup Configuration |
+| :---: | :---: |
+| ![Health & Savings](./assets/temp/Screenshot_1783360060.png) | ![Setup Configuration](./assets/temp/Screenshot_1783360074.png) |
+
+---
+
 ## 🚀 Key Features
 
 * **Dynamic Gap Tracker**: Tracks time elapsed since the last cigarette in real-time, displays daily progress towards dynamic target gaps, and offers a **Box Breathing** exercise to help users survive intense cravings.
