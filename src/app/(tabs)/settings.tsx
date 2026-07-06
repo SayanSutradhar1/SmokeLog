@@ -22,8 +22,8 @@ export default function SettingsScreen() {
 
   // Local form state
   const [cigsPerDay, setCigsPerDay] = useState(settings.cigarettesPerDay);
-  const [costPerPack, setCostPerPack] = useState(settings.costPerPack);
-  const [cigsPerPack, setCigsPerPack] = useState(settings.cigarettesPerPack || 20);
+  const [costPerPackStr, setCostPerPackStr] = useState(settings.costPerPack.toString());
+  const [cigsPerPackStr, setCigsPerPackStr] = useState((settings.cigarettesPerPack || 20).toString());
   const [currency, setCurrency] = useState(settings.currency);
   const [reductionSpeed, setReductionSpeed] = useState(settings.reductionSpeed);
 
@@ -34,18 +34,31 @@ export default function SettingsScreen() {
   const handleFieldChange = (field: string, value: any) => {
     setHasChanges(true);
     if (field === "cigsPerDay") setCigsPerDay(value);
-    if (field === "costPerPack") setCostPerPack(value);
-    if (field === "cigsPerPack") setCigsPerPack(value);
+    if (field === "costPerPack") setCostPerPackStr(value);
+    if (field === "cigsPerPack") setCigsPerPackStr(value);
     if (field === "currency") setCurrency(value);
     if (field === "reductionSpeed") setReductionSpeed(value);
   };
 
   const handleSave = async () => {
+    const cost = parseFloat(costPerPackStr);
+    const qty = parseInt(cigsPerPackStr);
+
+    if (isNaN(cost) || cost < 0) {
+      Alert.alert("Validation Error", "Please enter a valid pack cost (must be 0 or greater).");
+      return;
+    }
+
+    if (isNaN(qty) || qty < 1) {
+      Alert.alert("Validation Error", "Please enter a valid quantity of cigarettes per pack (must be 1 or greater).");
+      return;
+    }
+
     const updatedSettings = {
       ...settings,
       cigarettesPerDay: cigsPerDay || 10,
-      costPerPack: costPerPack || 15.0,
-      cigarettesPerPack: cigsPerPack || 20,
+      costPerPack: cost,
+      cigarettesPerPack: qty,
       currency,
       reductionSpeed,
     };
@@ -98,9 +111,9 @@ export default function SettingsScreen() {
         <FinancialConfig
           currency={currency}
           onCurrencyChange={(val) => handleFieldChange("currency", val)}
-          costPerPack={costPerPack}
+          costPerPack={costPerPackStr}
           onCostChange={(val) => handleFieldChange("costPerPack", val)}
-          cigsPerPack={cigsPerPack}
+          cigsPerPack={cigsPerPackStr}
           onQuantityChange={(val) => handleFieldChange("cigsPerPack", val)}
           currencies={currencies}
         />

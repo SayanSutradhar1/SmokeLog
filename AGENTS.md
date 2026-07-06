@@ -76,6 +76,10 @@ src/
   * For overview/stats panels (e.g. `dashboard.tsx`, `savings.tsx`), utilize a row-based grid system to show primary cards and detailed listings side-by-side (left column vs right column).
 * **Circular Sizing**: Circular dials or radial shapes (e.g. `CounterSection.tsx`) must fetch layout metrics from the `useResponsive` hook instead of static `Dimensions.get("window")` declarations to handle orientation changes or multitasking splits gracefully.
 
+### F. Database Load Error Handling & Gatekeeping
+* **Storage Load Failures**: In `SmokeContext.tsx`, initial disk reads (AsyncStorage calls) are enclosed in a try-catch. If loading fails, `error` is populated and `loading` is set to false.
+* **Root Gatekeeping**: The root layout `_layout.tsx` checks for `error` before mounting any child routes. If `error` is present, it blocks rendering the main tab routes and presents a full-screen system error layout with a `retryLoad` action. This prevents accidental empty state persistence (saving blank logs lists over existing files) and guarantees data integrity.
+
 ---
 
 ## 4. Class-Based Utilities & Memoization

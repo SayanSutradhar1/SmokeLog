@@ -19,6 +19,8 @@ interface SmokeContextType {
   logs: SmokeLog[];
   cravings: CravingSession[];
   loading: boolean;
+  error: string | null;
+  retryLoad: () => Promise<void>;
   secondsSinceLastSmoke: number | null;
   targetGapSeconds: number; // The target gap for today
   progressToTarget: number; // 0 to 1
@@ -51,29 +53,34 @@ export const SmokeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   const [logs, setLogs] = useState<SmokeLog[]>([]);
   const [cravings, setCravings] = useState<CravingSession[]>([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [secondsSinceLastSmoke, setSecondsSinceLastSmoke] = useState<number | null>(null);
 
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  const loadData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [storedSettings, storedLogs, storedCravings] = await Promise.all([
+        StorageManager.getSettings(),
+        StorageManager.getLogs(),
+        StorageManager.getCravingSessions(),
+      ]);
+
+      setSettings(storedSettings);
+      setLogs(storedLogs);
+      setCravings(storedCravings);
+    } catch (err) {
+      console.error("Failed to load initial storage data", err);
+      setError("Failed to open local database. Please restart the app or try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Load all data on mount
   useEffect(() => {
-    async function loadData() {
-      try {
-        const [storedSettings, storedLogs, storedCravings] = await Promise.all([
-          StorageManager.getSettings(),
-          StorageManager.getLogs(),
-          StorageManager.getCravingSessions(),
-        ]);
-
-        setSettings(storedSettings);
-        setLogs(storedLogs);
-        setCravings(storedCravings);
-      } catch (err) {
-        console.error("Failed to load initial storage data", err);
-      } finally {
-        setLoading(false);
-      }
-    }
     loadData();
   }, []);
 
@@ -270,6 +277,8 @@ export const SmokeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         logs,
         cravings,
         loading,
+        error,
+        retryLoad: loadData,
         secondsSinceLastSmoke,
         targetGapSeconds,
         progressToTarget,

@@ -8,6 +8,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  Alert,
 } from "react-native";
 import { useSmoke } from "@/hooks/useSmoke";
 import { useResponsive } from "@/hooks/useResponsive";
@@ -20,14 +21,29 @@ export const Onboarding: React.FC = () => {
 
   // Form states
   const [cigsPerDay, setCigsPerDay] = useState(10);
-  const [costPerPack, setCostPerPack] = useState(15.0);
-  const [cigsPerPack, setCigsPerPack] = useState(20);
+  const [costPerPackStr, setCostPerPackStr] = useState("15.00");
+  const [cigsPerPackStr, setCigsPerPackStr] = useState("20");
   const [currency, setCurrency] = useState("$");
   const [reductionSpeed, setReductionSpeed] = useState<"gentle" | "moderate" | "aggressive">("moderate");
 
   const currencies = ["$", "₹", "€", "£", "¥", "₱"];
 
   const handleNext = () => {
+    if (step === 3) {
+      const cost = parseFloat(costPerPackStr);
+      const qty = parseInt(cigsPerPackStr);
+
+      if (isNaN(cost) || cost < 0) {
+        Alert.alert("Validation Error", "Please enter a valid pack cost (must be 0 or greater).");
+        return;
+      }
+
+      if (isNaN(qty) || qty < 1) {
+        Alert.alert("Validation Error", "Please enter a valid quantity of cigarettes per pack (must be 1 or greater).");
+        return;
+      }
+    }
+
     if (step < 4) {
       setStep(step + 1);
     } else {
@@ -42,10 +58,13 @@ export const Onboarding: React.FC = () => {
   };
 
   const handleSubmit = async () => {
+    const cost = parseFloat(costPerPackStr);
+    const qty = parseInt(cigsPerPackStr);
+
     const settings: UserSettings = {
       cigarettesPerDay: cigsPerDay || 10,
-      costPerPack: costPerPack || 15.0,
-      cigarettesPerPack: cigsPerPack || 20,
+      costPerPack: isNaN(cost) ? 15.0 : cost,
+      cigarettesPerPack: isNaN(qty) ? 20 : qty,
       currency,
       reductionSpeed,
       isOnboarded: true,
@@ -138,11 +157,8 @@ export const Onboarding: React.FC = () => {
         <TextInput
           style={styles.input}
           keyboardType="numeric"
-          value={costPerPack.toString()}
-          onChangeText={(text) => {
-            const num = parseFloat(text);
-            setCostPerPack(isNaN(num) ? 0 : num);
-          }}
+          value={costPerPackStr}
+          onChangeText={setCostPerPackStr}
           placeholderTextColor="#666"
         />
       </View>
@@ -152,11 +168,8 @@ export const Onboarding: React.FC = () => {
         <TextInput
           style={styles.input}
           keyboardType="number-pad"
-          value={cigsPerPack.toString()}
-          onChangeText={(text) => {
-            const num = parseInt(text);
-            setCigsPerPack(isNaN(num) ? 0 : num);
-          }}
+          value={cigsPerPackStr}
+          onChangeText={setCigsPerPackStr}
           placeholderTextColor="#666"
         />
       </View>

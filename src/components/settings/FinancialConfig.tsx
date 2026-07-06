@@ -4,10 +4,10 @@ import { StyleSheet, Text, View, TouchableOpacity, TextInput } from "react-nativ
 interface FinancialConfigProps {
   currency: string;
   onCurrencyChange: (symbol: string) => void;
-  costPerPack: number;
-  onCostChange: (cost: number) => void;
-  cigsPerPack: number;
-  onQuantityChange: (qty: number) => void;
+  costPerPack: string;
+  onCostChange: (cost: string) => void;
+  cigsPerPack: string;
+  onQuantityChange: (qty: string) => void;
   currencies: string[];
 }
 
@@ -53,11 +53,8 @@ export const FinancialConfig: React.FC<FinancialConfigProps> = ({
         <TextInput
           style={styles.input}
           keyboardType="numeric"
-          value={costPerPack.toString()}
-          onChangeText={(text) => {
-            const num = parseFloat(text);
-            onCostChange(isNaN(num) ? 0 : num);
-          }}
+          value={costPerPack}
+          onChangeText={onCostChange}
         />
       </View>
 
@@ -67,11 +64,8 @@ export const FinancialConfig: React.FC<FinancialConfigProps> = ({
         <TextInput
           style={styles.input}
           keyboardType="number-pad"
-          value={cigsPerPack.toString()}
-          onChangeText={(text) => {
-            const num = parseInt(text);
-            onQuantityChange(isNaN(num) ? 0 : num);
-          }}
+          value={cigsPerPack}
+          onChangeText={onQuantityChange}
         />
       </View>
     </View>
